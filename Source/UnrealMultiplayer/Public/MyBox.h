@@ -35,7 +35,8 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "MyComponent")
 	TObjectPtr<UTextRenderComponent> ValueTextRender;
 
-	UPROPERTY(Replicated, BlueprintReadWrite, Category = "MyComponent")
+	//UPROPERTY(Replicated, BlueprintReadWrite, Category = "MyComponent")
+	UPROPERTY(ReplicatedUsing=OnRep_RepValue, BlueprintReadWrite, Category = "MyComponent")
 	int32 RepValue;
 
 	UFUNCTION()
@@ -44,9 +45,13 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "MyFunction")
 	void UpdateRepValue(int32 newValue);
 
-public:	
+	UFUNCTION(BlueprintCallable, Category = "MyFunction")
+	void OnRep_RepValue();
+
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 };

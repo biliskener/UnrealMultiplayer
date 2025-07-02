@@ -52,14 +52,16 @@ void AMyBox::UpdateRepValue(int32 newValue)
 	RepValue = newValue;
 }
 
+void AMyBox::OnRep_RepValue()
+{
+	FString valueStr = FString::Printf(TEXT("RepValue: %d"), RepValue);
+	ValueTextRender->SetText(FText::FromString(valueStr));
+}
+
 // Called every frame
 void AMyBox::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	FString valueStr = FString::Printf(TEXT("RepValue: %d"), RepValue);
-	
-	ValueTextRender->SetText(FText::FromString(valueStr));
 }
 
 void AMyBox::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
