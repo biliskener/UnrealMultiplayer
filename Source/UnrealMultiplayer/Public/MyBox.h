@@ -48,6 +48,11 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "MyFunction")
 	void OnRep_RepValue();
 
+	FTimerHandle TestTimer;
+
+	UFUNCTION(BlueprintCallable, Category = "MyFunction")
+	void DecreaseReplicated();
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

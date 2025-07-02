@@ -34,6 +34,8 @@ void AMyBox::BeginPlay()
 	CheckAuthority();
 	SetReplicates(true);
 	SetReplicateMovement(true);
+
+	GetWorld()->GetTimerManager().SetTimer(TestTimer, this, &AMyBox::DecreaseReplicated, 2.0f, false);
 }
 
 void AMyBox::CheckAuthority()
@@ -56,6 +58,17 @@ void AMyBox::OnRep_RepValue()
 {
 	FString valueStr = FString::Printf(TEXT("RepValue: %d"), RepValue);
 	ValueTextRender->SetText(FText::FromString(valueStr));
+}
+
+void AMyBox::DecreaseReplicated()
+{
+	if (HasAuthority()) {
+		RepValue--;
+		OnRep_RepValue();
+		if (RepValue > 0) {
+			GetWorld()->GetTimerManager().SetTimer(TestTimer, this, &AMyBox::DecreaseReplicated, 2.0f, false);
+		}
+	}
 }
 
 // Called every frame
