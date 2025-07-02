@@ -3,6 +3,7 @@
 
 #include "MyBox.h"
 #include "Components/TextRenderComponent.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 AMyBox::AMyBox()
@@ -18,13 +19,21 @@ AMyBox::AMyBox()
 
 	TextRender = CreateDefaultSubobject<UTextRenderComponent>("TextRender");
 	TextRender->SetupAttachment(Root);
+
+	ValueTextRender = CreateDefaultSubobject<UTextRenderComponent>("ValueTextRender");
+	ValueTextRender->SetupAttachment(Root);
+
+	RepValue = 50;
 }
 
 // Called when the game starts or when spawned
 void AMyBox::BeginPlay()
 {
 	Super::BeginPlay();
+
 	CheckAuthority();
+	SetReplicates(true);
+	SetReplicateMovement(true);
 }
 
 void AMyBox::CheckAuthority()
@@ -38,10 +47,25 @@ void AMyBox::CheckAuthority()
 	}
 }
 
+void AMyBox::UpdateRepValue(int32 newValue)
+{
+	RepValue = newValue;
+}
+
 // Called every frame
 void AMyBox::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	FString valueStr = FString::Printf(TEXT("RepValue: %d"), RepValue);
+	
+	ValueTextRender->SetText(FText::FromString(valueStr));
+}
+
+void AMyBox::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AMyBox, RepValue);
 }
 
