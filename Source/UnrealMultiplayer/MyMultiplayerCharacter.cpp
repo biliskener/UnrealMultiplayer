@@ -10,6 +10,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+#include "MySpawningActor.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateMyCharacter);
 
@@ -135,6 +136,13 @@ void AMyMultiplayerCharacter::DoJumpEnd()
 
 void AMyMultiplayerCharacter::ServerRPCFunction_Implementation() {
 	if (HasAuthority()) {
-		GEngine->AddOnScreenDebugMessage(-1, 3.0, FColor::Red, "Server RPC");
+		//GEngine->AddOnScreenDebugMessage(-1, 3.0, FColor::Red, "Server RPC");
+		if (IsValid(MySpawningActorClass)) {
+			auto MySpawningActor = GetWorld()->SpawnActor<AMySpawningActor>(MySpawningActorClass);
+			if (IsValid(MySpawningActor)) {
+				FVector Location = GetActorLocation() + GetActorRotation().Vector() * 100.0f + GetActorUpVector() * 50.0f;
+				MySpawningActor->SetActorLocation(Location);
+			}
+		}
 	}
 }

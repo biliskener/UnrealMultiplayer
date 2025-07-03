@@ -1,3 +1,5 @@
+#pragma once
+
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
@@ -7,6 +9,8 @@ class USpringArmComponent;
 class UCameraComponent;
 class UInputAction;
 struct FInputActionValue;
+
+class AMySpawningActor;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateMyCharacter, Log, All);
 
@@ -44,6 +48,10 @@ protected:
 	/** Mouse Look Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	UInputAction* MouseLookAction;
+
+protected:
+	UPROPERTY(EditAnywhere);
+	TSubclassOf<AMySpawningActor> MySpawningActorClass;
 
 public:
 
