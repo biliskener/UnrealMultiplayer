@@ -28,4 +28,7 @@ public:
 
 protected:
 	IOnlineSessionPtr SessionInterface;
+
+	UFUNCTION()
+	void OnCreateSessionComplete(FName SessionName, bool isSuccess);
 };

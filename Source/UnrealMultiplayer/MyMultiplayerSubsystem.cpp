@@ -21,6 +21,7 @@ void UMyMultiplayerSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 		SessionInterface = Subsystem->GetSessionInterface();
 		if (SessionInterface && SessionInterface.IsValid()) {
 			Print("~~~ OnlineSession Is Valid");
+			SessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UMyMultiplayerSubsystem::OnCreateSessionComplete);
 		}
 		else {
 			Print("~~~ OnlineSession Is Not Valid");
@@ -72,4 +73,12 @@ bool UMyMultiplayerSubsystem::CreateServer(const FString& ServerName)
 	return true;
 }
 
+void UMyMultiplayerSubsystem::OnCreateSessionComplete(FName SessionName, bool isSuccess)
+{
+	if (!isSuccess) {
+		Print("~~~ Session Create Failed");
+		return;
+	}
 
+	GetWorld()->ServerTravel("/Game/_Game/Maps/MultiplayerLevel?Listen");
+}
