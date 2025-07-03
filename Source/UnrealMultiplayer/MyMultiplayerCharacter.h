@@ -11,6 +11,7 @@ class UInputAction;
 struct FInputActionValue;
 
 class AMySpawningActor;
+class UParticleSystem;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateMyCharacter, Log, All);
 
@@ -52,6 +53,9 @@ protected:
 protected:
 	UPROPERTY(EditAnywhere);
 	TSubclassOf<AMySpawningActor> MySpawningActorClass;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UParticleSystem> BoomEffect;
 
 public:
 
@@ -98,7 +102,10 @@ public:
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
 public:
-	UFUNCTION(Server, Reliable, BlueprintCallable, Category="ServerRPC")
+	UFUNCTION(Server, Reliable, BlueprintCallable, Category = "ServerRPC")
 	void ServerRPCFunction();
+
+	UFUNCTION(Client, Reliable, BlueprintCallable, Category = "ClientRPC")
+	void ClientRPCFunction();
 };
 

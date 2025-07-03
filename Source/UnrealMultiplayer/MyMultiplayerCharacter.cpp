@@ -11,6 +11,8 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "MySpawningActor.h"
+#include "Kismet/GameplayStatics.h"
+#include "Particles/ParticleSystem.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateMyCharacter);
 
@@ -144,5 +146,11 @@ void AMyMultiplayerCharacter::ServerRPCFunction_Implementation() {
 				MySpawningActor->SetActorLocation(Location);
 			}
 		}
+	}
+}
+
+void AMyMultiplayerCharacter::ClientRPCFunction_Implementation() {
+	if (IsValid(BoomEffect)) {
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BoomEffect, GetActorLocation(), FRotator::ZeroRotator, true, EPSCPoolMethod::AutoRelease);
 	}
 }
