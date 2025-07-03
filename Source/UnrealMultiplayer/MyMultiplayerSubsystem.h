@@ -26,6 +26,9 @@ public:
 
 	bool CreateServer(const FString& ServerName);
 
+	UFUNCTION(BlueprintCallable, Category = "Screen")
+	void SetGameScreen(int x, int y);
+
 protected:
 	IOnlineSessionPtr SessionInterface;
 

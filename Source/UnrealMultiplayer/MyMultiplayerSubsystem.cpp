@@ -4,6 +4,7 @@
 #include "MyMultiplayerSubsystem.h"
 #include "OnlineSubsystem.h"
 #include "OnlineSessionSettings.h"
+#include "GameFramework/GameUserSettings.h"
 
 
 UMyMultiplayerSubsystem::UMyMultiplayerSubsystem() {
@@ -13,6 +14,9 @@ UMyMultiplayerSubsystem::UMyMultiplayerSubsystem() {
 void UMyMultiplayerSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
+
+	SetGameScreen(1280, 720);
+
 	Print("UMyMultiplayerSubsystem::Initialize");
 	IOnlineSubsystem* Subsystem = IOnlineSubsystem::Get();
 	if (Subsystem) {
@@ -52,6 +56,14 @@ bool UMyMultiplayerSubsystem::CreateServer(const FString& ServerName)
 	}
 
 	FName MySessionName = FName("Multiplayer Session");
+
+	FNamedOnlineSession* ExistingSession = SessionInterface->GetNamedSession(MySessionName);
+	if (ExistingSession) {
+		Print(FString::Printf(TEXT("~~~ Session With Name %s Already Exists, Will Destroy"), *MySessionName.ToString()));
+		SessionInterface->DestroySession(MySessionName);
+		return false;
+	}
+
 	FOnlineSessionSettings SessionSettings;
 	SessionSettings.bAllowJoinInProgress = true; // 是否允许加入
 	SessionSettings.bIsDedicated = false; // 是否为专用服务器
@@ -71,6 +83,14 @@ bool UMyMultiplayerSubsystem::CreateServer(const FString& ServerName)
 
 	Print("~~~ Server Create Finished");
 	return true;
+}
+
+void UMyMultiplayerSubsystem::SetGameScreen(int x, int y)
+{
+	UGameUserSettings* UserSettings = GEngine->GetGameUserSettings();
+	UserSettings->SetScreenResolution(FIntPoint(x, y));
+	UserSettings->SetFullscreenMode(EWindowMode::Windowed);
+	UserSettings->ApplySettings(true);
 }
 
 void UMyMultiplayerSubsystem::OnCreateSessionComplete(FName SessionName, bool isSuccess)
