@@ -5,6 +5,7 @@
 #include "OnlineSubsystem.h"
 #include "OnlineSessionSettings.h"
 #include "GameFramework/GameUserSettings.h"
+#include "Online/OnlineSessionNames.h"
 
 
 UMyMultiplayerSubsystem::UMyMultiplayerSubsystem()
@@ -29,6 +30,7 @@ void UMyMultiplayerSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 			Print("~~~ OnlineSession is Valid");
 			SessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UMyMultiplayerSubsystem::OnCreateSessionComplete);
 			SessionInterface->OnDestroySessionCompleteDelegates.AddUObject(this, &UMyMultiplayerSubsystem::OnDestroySessionComplete);
+			SessionInterface->OnFindSessionsCompleteDelegates.AddUObject(this, &UMyMultiplayerSubsystem::OnFindSessionComplete);
 		}
 		else {
 			Print("~~~ OnlineSession is not Valid");
@@ -79,7 +81,8 @@ bool UMyMultiplayerSubsystem::CreateServer(const FString& ServerName)
 	SessionSettings.bIsDedicated = false; // 是否为专用服务器
 	SessionSettings.bShouldAdvertise = true; // 是否广播
 	SessionSettings.NumPrivateConnections = 10; // 连接数量
-	SessionSettings.bUseLobbiesVoiceChatIfAvailable = true; 
+	//SessionSettings.bUseLobbiesVoiceChatIfAvailable = true; 
+	SessionSettings.bUseLobbiesIfAvailable = true;
 	SessionSettings.bUsesPresence = true; // 是否跨区域
 	SessionSettings.bAllowJoinViaPresence = true; // 是否允许通过在线状态加入
 
@@ -93,6 +96,26 @@ bool UMyMultiplayerSubsystem::CreateServer(const FString& ServerName)
 
 	Print("~~~ Server Create Finished");
 	return true;
+}
+
+bool UMyMultiplayerSubsystem::FindServer(const FString& ServerName)
+{
+	if (ServerName.TrimStartAndEnd().IsEmpty()) {
+		Print("~~~ Server Name is Empty");
+		return false;
+	}
+
+	SessionSearch = MakeShareable(new FOnlineSessionSearch());
+	bool isLan = false;
+	if (IOnlineSubsystem::Get()->GetSubsystemName() == "NULL") {
+		isLan = true;
+	}
+	SessionSearch->bIsLanQuery = isLan;
+	SessionSearch->MaxSearchResults = 9999;
+	SessionSearch->QuerySettings.Set(SEARCH_PRESENCE, true, EOnlineComparisonOp::Equals);
+	bool isSuccess = SessionInterface->FindSessions(0, SessionSearch.ToSharedRef());
+	Print(isSuccess ? "~~~ FindServer OK" : "~~~ FindSErver Failed");
+	return isSuccess;
 }
 
 void UMyMultiplayerSubsystem::SetGameScreen(int x, int y)
@@ -120,4 +143,15 @@ void UMyMultiplayerSubsystem::OnDestroySessionComplete(FName SessionName, bool i
 		CreateServerAfterDestroy = false;
 		CreateServer(DestroyServerName);
 	}
+}
+
+void UMyMultiplayerSubsystem::OnFindSessionComplete(bool isSuccess)
+{
+	if (!isSuccess) {
+		Print(FString::Printf(TEXT("~~~ Session Search Failed")));
+		return;
+	}
+
+	TArray<FOnlineSessionSearchResult> Results = SessionSearch->SearchResults;
+	Print(FString::Printf(TEXT("~~~ Session Search Results %d"), Results.Num()));
 }

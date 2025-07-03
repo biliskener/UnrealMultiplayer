@@ -29,6 +29,7 @@ void UMyStartMenuWidget::OnJoinGameBtnClick()
 {
 	if (MultiplayerSubsystem) {
 		MultiplayerSubsystem->Print("~~~ Join Game");
+		MultiplayerSubsystem->FindServer("TestServer");
 	}
 }
 

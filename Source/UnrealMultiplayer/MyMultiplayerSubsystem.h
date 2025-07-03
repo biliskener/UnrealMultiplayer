@@ -26,6 +26,8 @@ public:
 
 	bool CreateServer(const FString& ServerName);
 
+	bool FindServer(const FString& ServerName);
+
 	UFUNCTION(BlueprintCallable, Category = "Screen")
 	void SetGameScreen(int x, int y);
 
@@ -34,9 +36,14 @@ protected:
 	bool CreateServerAfterDestroy;
 	FString DestroyServerName;
 
+	TSharedPtr<FOnlineSessionSearch> SessionSearch;
+
 	UFUNCTION()
 	void OnCreateSessionComplete(FName SessionName, bool isSuccess);
 
 	UFUNCTION()
 	void OnDestroySessionComplete(FName SessionName, bool isSuccess);
+
+	UFUNCTION()
+	void OnFindSessionComplete(bool isSuccess);
 };
