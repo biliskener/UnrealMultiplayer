@@ -7,7 +7,9 @@
 #include "GameFramework/GameUserSettings.h"
 
 
-UMyMultiplayerSubsystem::UMyMultiplayerSubsystem() {
+UMyMultiplayerSubsystem::UMyMultiplayerSubsystem()
+	: CreateServerAfterDestroy(false)
+{
 
 }
 
@@ -24,11 +26,12 @@ void UMyMultiplayerSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 		Print("~~~ SystemName: " + SystemName);
 		SessionInterface = Subsystem->GetSessionInterface();
 		if (SessionInterface && SessionInterface.IsValid()) {
-			Print("~~~ OnlineSession Is Valid");
+			Print("~~~ OnlineSession is Valid");
 			SessionInterface->OnCreateSessionCompleteDelegates.AddUObject(this, &UMyMultiplayerSubsystem::OnCreateSessionComplete);
+			SessionInterface->OnDestroySessionCompleteDelegates.AddUObject(this, &UMyMultiplayerSubsystem::OnDestroySessionComplete);
 		}
 		else {
-			Print("~~~ OnlineSession Is Not Valid");
+			Print("~~~ OnlineSession is not Valid");
 		}
 	}
 }
@@ -45,21 +48,28 @@ void UMyMultiplayerSubsystem::Print(const FString& Message, const FColor& Color,
 		GEngine->AddOnScreenDebugMessage(inKey, ShowTime, Color, Message);
 	}
 
-	//UE_LOG(LogTemp, Warning, TEXT("%s"), *Message);
+	UE_LOG(LogTemp, Warning, TEXT("%s"), *Message);
 }
 
 bool UMyMultiplayerSubsystem::CreateServer(const FString& ServerName)
 {
+	if (CreateServerAfterDestroy) {
+		Print("~~~ Server is Destroying");
+		return false;
+	}
+
 	if (ServerName.TrimStartAndEnd().IsEmpty()) {
 		Print("~~~ ServerName is Empty");
 		return false;
 	}
 
-	FName MySessionName = FName("Multiplayer Session");
+	FName MySessionName = FName(ServerName); //FName("Multiplayer Session");
 
 	FNamedOnlineSession* ExistingSession = SessionInterface->GetNamedSession(MySessionName);
 	if (ExistingSession) {
 		Print(FString::Printf(TEXT("~~~ Session With Name %s Already Exists, Will Destroy"), *MySessionName.ToString()));
+		CreateServerAfterDestroy = true;
+		DestroyServerName = ServerName; // 必须放在DestroySession前面
 		SessionInterface->DestroySession(MySessionName);
 		return false;
 	}
@@ -101,4 +111,13 @@ void UMyMultiplayerSubsystem::OnCreateSessionComplete(FName SessionName, bool is
 	}
 
 	GetWorld()->ServerTravel("/Game/_Game/Maps/MultiplayerLevel?Listen");
+}
+
+void UMyMultiplayerSubsystem::OnDestroySessionComplete(FName SessionName, bool isSuccess)
+{
+	Print("~~~ OnDestroySessionComplete");
+	if (CreateServerAfterDestroy) {
+		CreateServerAfterDestroy = false;
+		CreateServer(DestroyServerName);
+	}
 }
