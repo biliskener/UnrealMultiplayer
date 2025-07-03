@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Interfaces/OnlineSessionInterface.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "MyMultiplayerSubsystem.generated.h"
 
@@ -22,4 +23,9 @@ public:
 	virtual void Deinitialize() override;
 
 	void Print(const FString& Message, const FColor& Color = FColor::MakeRandomColor(), float ShowTime = 2.0f, int32 inKey = -1);
+
+	bool CreateServer(const FString& ServerName);
+
+protected:
+	IOnlineSessionPtr SessionInterface;
 };

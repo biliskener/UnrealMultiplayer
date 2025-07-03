@@ -21,6 +21,7 @@ void UMyStartMenuWidget::OnCreateServerBtnClick()
 {
 	if (MultiplayerSubsystem) {
 		MultiplayerSubsystem->Print("~~~ Create Server");
+		MultiplayerSubsystem->CreateServer("TestServer");
 	}
 }
 
