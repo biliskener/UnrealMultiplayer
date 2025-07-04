@@ -22,7 +22,7 @@ public:
 
 	virtual void Deinitialize() override;
 
-	void Print(const FString& Message, const FColor& Color = FColor::MakeRandomColor(), float ShowTime = 2.0f, int32 inKey = -1);
+	void Print(const FString& Message, const FColor& Color = FColor::MakeRandomColor(), float ShowTime = 5.0f, int32 inKey = -1);
 
 	bool CreateServer(const FString& ServerName);
 
@@ -35,6 +35,7 @@ protected:
 	IOnlineSessionPtr SessionInterface;
 	bool CreateServerAfterDestroy;
 	FString DestroyServerName;
+	FString ServerNameToFind;
 
 	TSharedPtr<FOnlineSessionSearch> SessionSearch;
 

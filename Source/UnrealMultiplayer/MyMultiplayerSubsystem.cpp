@@ -81,18 +81,14 @@ bool UMyMultiplayerSubsystem::CreateServer(const FString& ServerName)
 	SessionSettings.bIsDedicated = false; // 是否为专用服务器
 	SessionSettings.bShouldAdvertise = true; // 是否广播
 	SessionSettings.NumPrivateConnections = 10; // 连接数量
-	//SessionSettings.bUseLobbiesVoiceChatIfAvailable = true; 
-	SessionSettings.bUseLobbiesIfAvailable = true;
+	//SessionSettings.bUseLobbiesIfAvailable = true;
 	SessionSettings.bUsesPresence = true; // 是否跨区域
 	SessionSettings.bAllowJoinViaPresence = true; // 是否允许通过在线状态加入
+	SessionSettings.Set(FName("SERVER_NAME"), ServerName, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+	SessionSettings.bIsLANMatch = IOnlineSubsystem::Get()->GetSubsystemName() == "NULL"; // 是否允许局域网
 
-	bool isLan = false;
-	if (IOnlineSubsystem::Get()->GetSubsystemName() == "NULL") {
-		isLan = true;
-	}
-	SessionSettings.bIsLANMatch = isLan; // 是否允许局域网
-
-	SessionInterface->CreateSession(0, MySessionName, SessionSettings);
+	const ULocalPlayer* LocalPlayer = GetWorld()->GetFirstLocalPlayerFromController();
+	SessionInterface->CreateSession(*LocalPlayer->GetPreferredUniqueNetId(), MySessionName, SessionSettings);
 
 	Print("~~~ Server Create Finished");
 	return true;
@@ -106,14 +102,12 @@ bool UMyMultiplayerSubsystem::FindServer(const FString& ServerName)
 	}
 
 	SessionSearch = MakeShareable(new FOnlineSessionSearch());
-	bool isLan = false;
-	if (IOnlineSubsystem::Get()->GetSubsystemName() == "NULL") {
-		isLan = true;
-	}
-	SessionSearch->bIsLanQuery = isLan;
+	SessionSearch->bIsLanQuery = IOnlineSubsystem::Get()->GetSubsystemName() == "NULL";
 	SessionSearch->MaxSearchResults = 9999;
 	SessionSearch->QuerySettings.Set(SEARCH_PRESENCE, true, EOnlineComparisonOp::Equals);
-	bool isSuccess = SessionInterface->FindSessions(0, SessionSearch.ToSharedRef());
+	ServerNameToFind = ServerName;
+	const ULocalPlayer* LocalPlayer = GetWorld()->GetFirstLocalPlayerFromController();
+	bool isSuccess = SessionInterface->FindSessions(*LocalPlayer->GetPreferredUniqueNetId(), SessionSearch.ToSharedRef());
 	Print(isSuccess ? "~~~ FindServer OK" : "~~~ FindSErver Failed");
 	return isSuccess;
 }
@@ -154,4 +148,15 @@ void UMyMultiplayerSubsystem::OnFindSessionComplete(bool isSuccess)
 
 	TArray<FOnlineSessionSearchResult> Results = SessionSearch->SearchResults;
 	Print(FString::Printf(TEXT("~~~ Session Search Results %d"), Results.Num()));
+	for (auto& Result : Results) {
+		if (Result.IsValid()) {
+			FString ServerName;
+			Result.Session.SessionSettings.Get(FName("SERVER_NAME"), ServerName);
+			Print(FString::Printf(TEXT("~~~ Found Server: %s"), *ServerName), FColor::Red, 5.0f);
+			if (ServerName == ServerNameToFind) {
+				Print("~~~ Server Matched!!!", FColor::Green, 5.0f);
+				break;
+			}
+		}
+	}
 }
