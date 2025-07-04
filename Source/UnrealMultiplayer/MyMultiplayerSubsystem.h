@@ -32,8 +32,10 @@ public:
 	void SetGameScreen(int x, int y);
 
 protected:
-	IOnlineSessionPtr SessionInterface;
 	bool CreateServerAfterDestroy;
+	bool isCreatingServer;
+	bool isFindingServer;
+	IOnlineSessionPtr SessionInterface;
 	FString DestroyServerName;
 	FString ServerNameToFind;
 

@@ -10,6 +10,8 @@
 
 UMyMultiplayerSubsystem::UMyMultiplayerSubsystem()
 	: CreateServerAfterDestroy(false)
+	, isCreatingServer(false)
+	, isFindingServer(false)
 {
 
 }
@@ -55,6 +57,11 @@ void UMyMultiplayerSubsystem::Print(const FString& Message, const FColor& Color,
 
 bool UMyMultiplayerSubsystem::CreateServer(const FString& ServerName)
 {
+	if (isCreatingServer) {
+		Print("~~~ Server is still Creating");
+		return false;
+	}
+
 	if (CreateServerAfterDestroy) {
 		Print("~~~ Server is Destroying");
 		return false;
@@ -88,14 +95,24 @@ bool UMyMultiplayerSubsystem::CreateServer(const FString& ServerName)
 	SessionSettings.bIsLANMatch = IOnlineSubsystem::Get()->GetSubsystemName() == "NULL"; // ÊÇ·ñÔÊÐí¾ÖÓòÍø
 
 	const ULocalPlayer* LocalPlayer = GetWorld()->GetFirstLocalPlayerFromController();
-	SessionInterface->CreateSession(*LocalPlayer->GetPreferredUniqueNetId(), MySessionName, SessionSettings);
+	
+	isCreatingServer = true;
+	bool isOk = SessionInterface->CreateSession(*LocalPlayer->GetPreferredUniqueNetId(), MySessionName, SessionSettings);
+	if (!isOk) {
+		isCreatingServer = false;
+	}
 
-	Print("~~~ Server Create Finished");
-	return true;
+	Print("~~~ Server Create Finished: " + isOk);
+	return isOk;
 }
 
 bool UMyMultiplayerSubsystem::FindServer(const FString& ServerName)
 {
+	if (isFindingServer) {
+		Print("~~~ Server is Still Finding");
+		return false;
+	}
+
 	if (ServerName.TrimStartAndEnd().IsEmpty()) {
 		Print("~~~ Server Name is Empty");
 		return false;
@@ -107,9 +124,13 @@ bool UMyMultiplayerSubsystem::FindServer(const FString& ServerName)
 	SessionSearch->QuerySettings.Set(SEARCH_PRESENCE, true, EOnlineComparisonOp::Equals);
 	ServerNameToFind = ServerName;
 	const ULocalPlayer* LocalPlayer = GetWorld()->GetFirstLocalPlayerFromController();
-	bool isSuccess = SessionInterface->FindSessions(*LocalPlayer->GetPreferredUniqueNetId(), SessionSearch.ToSharedRef());
-	Print(isSuccess ? "~~~ FindServer OK" : "~~~ FindSErver Failed");
-	return isSuccess;
+	isFindingServer = true;
+	bool isOk = SessionInterface->FindSessions(*LocalPlayer->GetPreferredUniqueNetId(), SessionSearch.ToSharedRef());
+	if (!isOk) {
+		isFindingServer = false;
+	}
+	Print(isOk ? "~~~ FindServer OK" : "~~~ FindSErver Failed");
+	return isOk;
 }
 
 void UMyMultiplayerSubsystem::SetGameScreen(int x, int y)
@@ -122,6 +143,13 @@ void UMyMultiplayerSubsystem::SetGameScreen(int x, int y)
 
 void UMyMultiplayerSubsystem::OnCreateSessionComplete(FName SessionName, bool isSuccess)
 {
+	Print("~~~ OnCreateSessionComplete");
+	if (!isCreatingServer) {
+		return ;
+	}
+
+	isCreatingServer = false;
+
 	if (!isSuccess) {
 		Print("~~~ Session Create Failed");
 		return;
@@ -141,8 +169,18 @@ void UMyMultiplayerSubsystem::OnDestroySessionComplete(FName SessionName, bool i
 
 void UMyMultiplayerSubsystem::OnFindSessionComplete(bool isSuccess)
 {
+	if (isFindingServer) {
+		//return;
+	}
+
+	isFindingServer = false;
+
 	if (!isSuccess) {
 		Print(FString::Printf(TEXT("~~~ Session Search Failed")));
+		return;
+	}
+
+	if (SessionSearch == nullptr) {
 		return;
 	}
 
