@@ -10,7 +10,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(Abstract)
 class UNREALMULTIPLAYER_API UMyMultiplayerSubsystem : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
