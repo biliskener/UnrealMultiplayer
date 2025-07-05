@@ -1,0 +1,17 @@
+{
+    "UnrealAngelscript.diagnosticsForUnrealNamingConvention": false,
+    "UnrealAngelscript.inlayHints.parameterHintsForConstants": true,
+    "UnrealAngelscript.inlayHints.parameterHintsForComplexExpressions": true,
+    "UnrealAngelscript.inlayHints.parameterHintsForSingleParameterFunctions": true,
+    "files.exclude": {
+        "_Packages/": true,
+        ".vs/": true,
+        "Binaries/": true,
+        "Build/": true,
+        "DerivedDataCache/": true,
+        "Intermediate/": true,
+        "Saved/": true,
+        "Script/Binds.Cache": true,
+        "Script/Binds.Cache.Headers": true
+    }
+}

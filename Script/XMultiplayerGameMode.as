@@ -1,0 +1,3 @@
+class XMultiplayerGameMode: AUnrealMultiplayerGameMode {
+
+}

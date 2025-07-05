@@ -1,0 +1,3 @@
+class XMultiplayerPlayerController: AUnrealMultiplayerPlayerController {
+
+}
