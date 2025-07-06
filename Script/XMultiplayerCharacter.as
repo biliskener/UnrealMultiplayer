@@ -44,6 +44,7 @@ class XMultiplayerCharacter: AMyMultiplayerCharacter {
                 auto HeadUI = Cast<XMultiplayerHeadUI>(Widget.GetWidget());
                 HeadUI.SetPlayerName(PlayerState.GetPlayerName());
                 bNameDirty = false;
+                
             }
         }
     }

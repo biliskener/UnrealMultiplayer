@@ -18,7 +18,7 @@ public class UnrealMultiplayer : ModuleRules
 			"StateTreeModule",
 			"GameplayStateTreeModule",
 			"UMG",
-			"OnlineSubsystem", "OnlineSubsystemSteam"
+			"OnlineSubsystem", "OnlineSubsystemSteam", "OnlineSubsystemNull"
         });
 
 		PrivateDependencyModuleNames.AddRange(new string[] { });
