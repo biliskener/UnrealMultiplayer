@@ -19,6 +19,16 @@ UMultiplayerSessionsSubsystem::UMultiplayerSessionsSubsystem()
 	}
 }
 
+FName UMultiplayerSessionsSubsystem::GetOnlineSubsystemName() const {
+	IOnlineSubsystem* Subsystem = IOnlineSubsystem::Get();
+	if (Subsystem != nullptr) {
+		return Subsystem->GetSubsystemName();
+	}
+	else {
+		return FName();
+	}
+}
+
 bool UMultiplayerSessionsSubsystem::CreateSession(int32 NumPublicConnections, FString MatchType)
 {
 	if (!SessionInterface.IsValid()) {
@@ -38,8 +48,20 @@ bool UMultiplayerSessionsSubsystem::CreateSession(int32 NumPublicConnections, FS
 	LastSessionSettings->bAllowJoinViaPresence = true;
 	LastSessionSettings->bShouldAdvertise = true;
 	LastSessionSettings->bUsesPresence = true;
-	//LastSessionSettings->bUseLobbiesIfAvailable = true;
+	LastSessionSettings->bUseLobbiesIfAvailable = true;
 	LastSessionSettings->Set(FName("MatchType"), MatchType, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+
+
+	/*
+	SessionSettings.bAllowJoinInProgress = true; // 是否允许加入
+	SessionSettings.bIsDedicated = false; // 是否为专用服务器
+	SessionSettings.bShouldAdvertise = true; // 是否广播
+	SessionSettings.NumPrivateConnections = 10; // 连接数量
+	//SessionSettings.bUseLobbiesIfAvailable = true;
+	SessionSettings.bUsesPresence = true; // 是否跨区域
+	SessionSettings.bAllowJoinViaPresence = true; // 是否允许通过在线状态加入
+	SessionSettings.Set(FName("SERVER_NAME"), ServerName, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+	*/
 
 	const ULocalPlayer* LocalPlayer = GetWorld()->GetFirstLocalPlayerFromController();
 	if (!SessionInterface->CreateSession(*LocalPlayer->GetPreferredUniqueNetId(), NAME_GameSession, *LastSessionSettings)) {

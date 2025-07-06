@@ -62,6 +62,9 @@ public:
 
 public:
 	UFUNCTION(BlueprintCallable)
+	FName GetOnlineSubsystemName() const;
+
+	UFUNCTION(BlueprintCallable)
 	bool CreateSession(int32 NumPublicConnections, FString MatchType);
 
 	UFUNCTION(BlueprintCallable)

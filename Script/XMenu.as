@@ -40,6 +40,7 @@ class XMenu: UUserWidget {
         MultiplayerSessionsSubsystem = UMultiplayerSessionsSubsystem::Get();
 
         if(MultiplayerSessionsSubsystem != nullptr) {
+            Print(f"~~~ OnlineSubsystemName: {MultiplayerSessionsSubsystem.GetOnlineSubsystemName()}");
             MultiplayerSessionsSubsystem.MultiplayerOnCreateSessionComplete.AddUFunction(this, n"OnCreateSession");
             MultiplayerSessionsSubsystem.MultiplayerOnFindSessionsComplete.AddUFunction(this, n"OnFindSessions");
             MultiplayerSessionsSubsystem.MultiplayerOnJoinSessionComplete.AddUFunction(this, n"OnJoinSession");
@@ -69,7 +70,10 @@ class XMenu: UUserWidget {
     UFUNCTION()
     void OnFindSessions(const TArray<FMultiplayerSessionsSearchResult>&in SearchResults, bool bWasSuccessful) {
         Print(f"~~~ OnFindSessions: {bWasSuccessful} count: {SearchResults.Num()}");
+        Print(f"~~~ NeedMatchType: {MatchType}");
         for(auto& SearchResult: SearchResults) {
+            auto MatchType_ = SearchResult.GetSettingsStrValue("MatchType");
+            Print(f"~~~ FoundSession: {SearchResult.OwningUserName} : {MatchType_}");
             if(SearchResult.GetSettingsStrValue("MatchType") == MatchType) {
                 Print(f"~~~ JoinSession: {SearchResult.GetOwningUserName()} count: {SearchResults.Num()}");
                 MultiplayerSessionsSubsystem.JoinSession(SearchResult);
