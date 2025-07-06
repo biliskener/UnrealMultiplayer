@@ -24,7 +24,7 @@ public:
 	}
 
 	UFUNCTION(ScriptCallable)
-	static FString OwningUserName(const FMultiplayerSessionsSearchResult& Object) {
+	static FString GetOwningUserName(const FMultiplayerSessionsSearchResult& Object) {
 		return Object.Result.Session.OwningUserName;
 	}
 
@@ -124,4 +124,10 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	static void SetInputModeGameOnly(APlayerController* PlayerController, UUserWidget* Widget);
+
+	UFUNCTION(BlueprintCallable)
+	static void ServerTravel(APlayerController* PlayerController, const FString& InURL, bool bAbsolute = false, bool bShouldSkipGameNotify = false);
+
+	UFUNCTION(BlueprintCallable)
+	static void ClientTravel(APlayerController* PlayerController, const FString& URL, ETravelType TravelType, bool bSeamless = false);
 };

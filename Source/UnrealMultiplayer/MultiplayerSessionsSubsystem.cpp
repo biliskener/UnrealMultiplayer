@@ -188,3 +188,13 @@ void UMultiplayerSessionsSubsystem::SetInputModeGameOnly(APlayerController* Play
 	PlayerController->SetInputMode(InputModeData);
 	PlayerController->SetShowMouseCursor(false);
 }
+
+void UMultiplayerSessionsSubsystem::ServerTravel(APlayerController* PlayerController, const FString& FURL, bool bAbsolute, bool bShouldSkipGameNotify)
+{
+	PlayerController->GetWorld()->ServerTravel(FURL, bAbsolute, bShouldSkipGameNotify);
+}
+
+void UMultiplayerSessionsSubsystem::ClientTravel(APlayerController* PlayerController, const FString& URL, ETravelType TravelType, bool bSeamless)
+{
+	PlayerController->ClientTravel(URL, TravelType, bSeamless);
+}

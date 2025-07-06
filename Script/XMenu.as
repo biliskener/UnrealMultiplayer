@@ -61,7 +61,8 @@ class XMenu: UUserWidget {
     void OnCreateSession(bool bWasSuccessful) {
         Print(f"~~~ OnCreateSession {bWasSuccessful}", 5.0f, bWasSuccessful ? FLinearColor::Blue : FLinearColor::Red);
         if(bWasSuccessful) {
-            GetWorld().ServerTravel("/Game/_Multiplayer2/LobbyLevel?Listen", true, false);
+            //GetWorld().ServerTravel("/Game/_Multiplayer2/LobbyLevel?Listen", true, false);
+            UMultiplayerSessionsSubsystem::ServerTravel(OwningPlayer, "/Game/_Multiplayer2/LobbyLevel?Listen", true);
         }
     }
 
@@ -70,6 +71,8 @@ class XMenu: UUserWidget {
         Print(f"~~~ OnFindSessions: {bWasSuccessful} count: {SearchResults.Num()}");
         for(auto& SearchResult: SearchResults) {
             if(SearchResult.GetSettingsStrValue("MatchType") == MatchType) {
+                Print(f"~~~ JoinSession: {SearchResult.GetOwningUserName()} count: {SearchResults.Num()}");
+                MultiplayerSessionsSubsystem.JoinSession(SearchResult);
                 return;
             }
         }
@@ -79,7 +82,8 @@ class XMenu: UUserWidget {
     void OnJoinSession(FString Result) {
         if(Result == "Success") {
             FString Address = MultiplayerSessionsSubsystem.GetResolvedConnectString();
-            Gameplay::OpenLevel(FName(Address), true); //? 暂无ClientTravel接口 由PlayerController提供 PlayerController.ClientTravel(xxx, true);
+            UMultiplayerSessionsSubsystem::ClientTravel(OwningPlayer, Address, ETravelType::TRAVEL_Absolute);
+            //Gameplay::OpenLevel(FName(Address), true); //? 暂无ClientTravel接口 由PlayerController提供 PlayerController.ClientTravel(xxx, true);
         }
     }
 
