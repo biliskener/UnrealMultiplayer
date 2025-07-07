@@ -51,6 +51,10 @@ bool UMultiplayerSessionsSubsystem::CreateSession(int32 NumPublicConnections, FS
 	LastSessionSettings->bUseLobbiesIfAvailable = true;
 	LastSessionSettings->Set(FName("MatchType"), MatchType, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 
+	LastSessionSettings->NumPrivateConnections = NumPublicConnections;
+	LastSessionSettings->bIsDedicated = false;
+	//LastSessionSettings->bUseLobbiesVoiceChatIfAvailable = true;
+
 
 	/*
 	SessionSettings.bAllowJoinInProgress = true; // 是否允许加入
@@ -213,6 +217,7 @@ void UMultiplayerSessionsSubsystem::SetInputModeGameOnly(APlayerController* Play
 
 void UMultiplayerSessionsSubsystem::ServerTravel(APlayerController* PlayerController, const FString& FURL, bool bAbsolute, bool bShouldSkipGameNotify)
 {
+	//当前地图用的GameMode，打开蓝图并勾选Use Seamless Travel
 	PlayerController->GetWorld()->ServerTravel(FURL, bAbsolute, bShouldSkipGameNotify);
 }
 

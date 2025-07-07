@@ -84,8 +84,10 @@ class XMenu: UUserWidget {
 
     UFUNCTION()
     void OnJoinSession(FString Result) {
+        Print(f"~~~ OnJoinSession Result: {Result}");
         if(Result == "Success") {
             FString Address = MultiplayerSessionsSubsystem.GetResolvedConnectString();
+            Print(f"~~~ Address: {Address}");
             UMultiplayerSessionsSubsystem::ClientTravel(OwningPlayer, Address, ETravelType::TRAVEL_Absolute);
             //Gameplay::OpenLevel(FName(Address), true); //? 暂无ClientTravel接口 由PlayerController提供 PlayerController.ClientTravel(xxx, true);
         }
