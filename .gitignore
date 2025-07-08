@@ -74,3 +74,7 @@ Plugins/**/Intermediate/*
 DerivedDataCache/*
 /.svn
 /Content/Developers
+/Plugins/AdvancedSessions/Intermediate
+/Plugins/AdvancedSessions/Binaries
+/Plugins/AdvancedSteamSessions/Intermediate
+/Plugins/AdvancedSteamSessions/Binaries
