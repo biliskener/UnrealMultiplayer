@@ -78,3 +78,5 @@ DerivedDataCache/*
 /Plugins/AdvancedSessions/Binaries
 /Plugins/AdvancedSteamSessions/Intermediate
 /Plugins/AdvancedSteamSessions/Binaries
+/Plugins/SteamSession/Intermediate
+/Plugins/SteamSession/Binaries
